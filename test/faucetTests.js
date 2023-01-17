@@ -31,8 +31,23 @@ describe('Faucet', function () {
   })
 
   it('should block withdrawAll for a not-owner user', async function () {
-    const { faucet, owner, notOwner } = await loadFixture(deployContractAndSetVariables)
+    const { faucet, notOwner } = await loadFixture(deployContractAndSetVariables)
 
     await expect(faucet.connect(notOwner).withdrawAll()).to.be.revertedWith('You are not the owner')
+  })
+
+  it('should block destroyFaucet for a not-owner user', async function () {
+    const { faucet, notOwner } = await loadFixture(deployContractAndSetVariables)
+
+    await expect(faucet.connect(notOwner).destroyFaucet()).to.be.revertedWith('You are not the owner')
+  })
+
+  it('should destroyFaucet correctly', async function () {
+    const { faucet, owner } = await loadFixture(deployContractAndSetVariables)
+
+    // Destroy contract
+    await faucet.destroyFaucet()
+
+    expect(await ethers.provider.getCode(faucet.address)).to.equal('0x')
   })
 })
